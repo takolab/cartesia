@@ -24,8 +24,8 @@ const ConversationPage = () => {
   const agentName = "AI Assistant";
 
   // ElevenLabs agent configuration - use workflow-generated ID or fallback to default
-  const DEFAULT_AGENT_ID = "agent_9301kc7b1k14f5wv01kazanwv5hs";
-  const AGENT_ID = sessionStorage.getItem("agentId") || DEFAULT_AGENT_ID;
+  const DEFAULT_AGENT_ID = "agent_1201kc7m24a7fsmvm38e13czvhhb";
+  const AGENT_ID = DEFAULT_AGENT_ID;
 
   const conversation = useConversation({
     onConnect: () => {

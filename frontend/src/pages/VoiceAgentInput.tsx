@@ -25,7 +25,7 @@ const VoiceAgentInput = () => {
             <Mic className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Voice AI Agent
+            Who would you like to talk to?
           </h1>
           <p className="text-muted-foreground text-lg">
             Have a conversation with an AI agent powered by Cartesia
