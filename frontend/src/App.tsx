@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { Layout, Typography, Input, Button, Space, Card } from 'antd';
+import { Layout, Typography, Input, Button, Space, Card, message } from 'antd';
+
+import {
+  startPublicAgentConversation,
+  endAgentConversation,
+} from './services/elevenLabsConversationService';
+import type { ConversationInstance } from './services/elevenLabsConversationService';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -8,20 +14,37 @@ const { TextArea } = Input;
 function App() {
   const [query, setQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [conversation, setConversation] = useState<ConversationInstance | null>(null);
 
-  const handleStartWorkflow = async () => {
-    if (!query.trim()) return;
+  const handleToggleConversation = async () => {
+    // If already connected → end conversation
+    if (conversation) {
+      try {
+        await endAgentConversation(conversation);
+        setConversation(null);
+        message.info('Conversation ended.');
+      } catch (error) {
+        console.error(error);
+        message.error('Failed to end conversation.');
+      }
+      return;
+    }
+
+    if (!query.trim()) {
+      message.warning('You can describe your intent, or just start talking.');
+    }
 
     setIsSubmitting(true);
-
-    // 🔧 TODO: replace this with real API call to your backend
-    console.log('Trigger workflow with query:', query);
-
-    // simulate a delay for now
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    setIsSubmitting(false);
-    // later: navigate to dashboard view, store workflow_id, etc.
+    try {
+      const conv = await startPublicAgentConversation();
+      setConversation(conv);
+      message.success('Connected to agent. Start speaking!');
+    } catch (error) {
+      console.error(error);
+      message.error('Failed to start conversation. Check console for details.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -51,12 +74,12 @@ function App() {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button
-                type="primary"
+                type={conversation ? 'default' : 'primary'}
+                danger={!!conversation}
                 loading={isSubmitting}
-                onClick={handleStartWorkflow}
-                disabled={!query.trim()}
+                onClick={handleToggleConversation}
               >
-                Start workflow
+                {conversation ? 'End conversation' : 'Start conversation'}
               </Button>
             </div>
           </Space>
