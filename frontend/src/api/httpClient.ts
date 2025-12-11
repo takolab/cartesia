@@ -17,6 +17,19 @@ httpClient.interceptors.response.use(
   (error) => {
     // Central place to handle errors
     console.error('API error:', error);
+
+    // Add user-friendly error messages
+    if (error.response) {
+      // Server responded with error status
+      error.userMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+    } else if (error.request) {
+      // Request made but no response
+      error.userMessage = 'Network error: Unable to reach the server. Please check your connection.';
+    } else {
+      // Something else happened
+      error.userMessage = error.message || 'An unexpected error occurred';
+    }
+
     return Promise.reject(error);
   },
 );
